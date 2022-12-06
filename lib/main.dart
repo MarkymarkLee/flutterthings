@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -34,14 +34,48 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _mode = 0;
   RandomImage ri = RandomImage();
+  RandomLocalImage rli = RandomLocalImage();
 
-  void _incrementCounter() {
+  void _changeImage() {
     setState(() {
-      _counter++;
-      ri.getRandomImage();
+      if(_mode==0) {
+        ri.getRandomImage();
+      }
+      else{
+        rli.changeImage();
+      }
     });
+  }
+
+  void _changeMode(){
+    setState(() {
+      if (_mode == 1) {
+        _mode = 0;
+      }
+      else {
+        _mode = 1;
+      }
+    });
+  }
+
+  Widget _displayImage(){
+    if(_mode==0){
+      return ri.curImage;
+    }
+    else{
+      return rli.image;
+    }
+  }
+
+  Widget _displayMode(){
+    if(_mode==0){
+      return const Text("Network");
+    }
+    else{
+      return const Text("Local");
+    }
   }
 
   @override
@@ -54,15 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ri.curImage,
+          children:<Widget>[
+            _displayImage(),
+            ElevatedButton(onPressed: _changeImage, child: const Text("Change Image")),
+            ElevatedButton(onPressed: _changeMode, child: _displayMode()),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.abc),
       ),
     );
   }
@@ -113,5 +144,24 @@ class RandomImage{
           // By default, show a loading spinner.
           return const CircularProgressIndicator();
         });
+  }
+}
+
+class RandomLocalImage{
+  int n = 5;
+  int cur = 1;
+  late Widget image;
+
+  RandomLocalImage(){
+    image = Image.asset("asset/image1.jpeg");
+  }
+  void changeImage(){
+    Random r = Random();
+    int temp = r.nextInt(n)+1;
+    while(temp==cur){
+      temp = r.nextInt(n) + 1;
+    }
+    cur = temp;
+    image = Image.asset("asset/image$cur.jpeg");
   }
 }
