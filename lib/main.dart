@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -73,7 +74,6 @@ class RandomImage{
   Future<String> fetchImageUrl() async {
     final response = await http
         .get(Uri.parse('https://api.thecatapi.com/v1/images/search'));
-
     if (response.statusCode == 200) {
       Map<String,dynamic> json;
       json = jsonDecode(response.body)[0];
